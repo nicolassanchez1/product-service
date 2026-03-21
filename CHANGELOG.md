@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/nicolassanchez1/product-service/compare/v0.2.0...v0.2.1) (2026-03-21)
+
+
+### Bug Fixes
+
+* enable ssl connection for neon postgres database ([f6c38a6](https://github.com/nicolassanchez1/product-service/commit/f6c38a6db6fbedabc379633878a0ea381856b767))
+
+
+
 # [0.2.0](https://github.com/nicolassanchez1/product-service/compare/v0.1.0...v0.2.0) (2026-03-21)
 
 
