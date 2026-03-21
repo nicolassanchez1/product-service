@@ -57,6 +57,19 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## 2. Cloud Design (Deployment on Render)
+
+For the cloud deployment strategy, I chose **Render** as the Cloud PaaS provider. This allows for a real, live cloud environment instead of a local simulation, demonstrating a production-ready approach.
+
+The microservices architecture is mapped to Render's infrastructure as follows:
+
+- **Database:** A Managed PostgreSQL instance on Render. This ensures ACID compliance and provides automated backups and secure internal networking.
+- **Products Microservice:** Deployed as a Node.js "Web Service". It connects securely to the PostgreSQL database using environment variables (`DB_HOST`, `DB_PASSWORD`, etc.).
+- **Orders Microservice:** (To be deployed) Will be set up as a separate "Web Service" to maintain the decoupling of domains.
+- **Inter-service Communication:** Services will communicate via REST over Render's internal private network, ensuring low latency and preventing external exposure of internal endpoints.
+
+This approach perfectly aligns with the required scalability, maintainability, and separation of concerns. If traffic spikes in the catalog domain, the Products Web Service can be scaled vertically or horizontally in Render without affecting the Orders Web Service.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.

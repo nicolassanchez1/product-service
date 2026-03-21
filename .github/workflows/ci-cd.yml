@@ -1,4 +1,4 @@
-name: Microservicio Productos CI/CD
+name: Products Microservice CI/CD
 
 on:
   push:
@@ -10,37 +10,40 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout del código
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Configurar Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Instalación de dependencias
+      - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Build del servicio
+      - name: Build service
         run: npm run build
-
-      - name: Simulación de despliegue
+      - name: Trigger Render deployment
         run: |
-          echo "Iniciando despliegue simulado..."
-          echo "Contenedor subido a Docker Hub simulado."
-          echo "Despliegue en AWS ECS simulado completado con éxito."
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            echo "Error: RENDER_DEPLOY_HOOK_URL secret is not set."
+            exit 1
+          fi
+          echo "Triggering live deployment on Render..."
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          echo "Deployment triggered successfully."
 
   versioning-and-changelog:
     needs: build-and-test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout del código
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Incremento automático de versión y Changelog
+      - name: Automatic version bump and Changelog
         uses: TriPSs/conventional-changelog-action@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
