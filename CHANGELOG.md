@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/nicolassanchez1/product-service/compare/v0.3.0...v0.4.0) (2026-03-24)
+
+
+### Features
+
+* validate SSL ([35136f6](https://github.com/nicolassanchez1/product-service/commit/35136f678d59ad2cca79e02bffd9fc29dbe1af76))
+
+
+
 # [0.3.0](https://github.com/nicolassanchez1/product-service/compare/v0.2.1...v0.3.0) (2026-03-24)
 
 
