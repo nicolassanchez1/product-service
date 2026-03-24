@@ -1,111 +1,77 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🛍️ Products Microservice - LinkTic Technical Test
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este repositorio contiene el microservicio de **Productos**, una pieza fundamental del ecosistema de la prueba técnica de LinkTic.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Desarrollado en **NestJS 11**, este servicio es responsable de gestionar el catálogo de productos y el inventario. Está diseñado para operar de forma independiente y se comunica con el mundo exterior exclusivamente a través del API Gateway, asegurando un control de acceso estricto para las operaciones de mutación de datos.
 
-## Description
+## 🏗️ Arquitectura y Rol
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Dentro del patrón de microservicios, este componente opera en el puerto `:3003` (por defecto) y maneja su propio dominio de datos.
 
-## Project setup
+- **Lecturas (Públicas):** Permite a cualquier cliente consultar el catálogo y los detalles de los productos.
+- **Escrituras (Protegidas):** La creación y actualización de inventario están blindadas. El servicio delega la validación de identidad validando el JWT emitido por el _Auth Service_.
 
-```bash
-$ npm install
+## 🛡️ Características Principales
+
+1. **CRUD Optimizado:** Operaciones eficientes para la consulta, creación y actualización de productos.
+2. **Seguridad por JWT:** Integración nativa con `@nestjs/passport` y `AuthGuard('jwt')` para proteger los endpoints de administración.
+3. **Validación de Datos:** Uso de DTOs (`CreateProductDto`, `UpdateProductDto`) y `ParseUUIDPipe` para garantizar la integridad de la información entrante.
+4. **Documentación Swagger:** Decoradores de `@nestjs/swagger` implementados para autogenerar la especificación de la API.
+
+## ⚙️ Configuración del Entorno (.env)
+
+Crea un archivo `.env` en la raíz de este microservicio. Las variables mínimas recomendadas son:
+
+```env
+PORT=3003
+JWT_SECRET=secret-key
+DB_HOST=postgres://usuario:password@localhost:5432/products_db (Ejemplo)
+DB_PORT=5432
+DB_USERNAME=neondb_owner
+DB_PASSWORD=npg_D9qgUOu7Ndai
+DB_NAME=neondb
 ```
 
-## Compile and run the project
+## 🚀 Despliegue y Ejecución
 
+Opción A: Ejecución Local (Desarrollo)
+* Prerrequisitos
+* Node.js (v18+)
+* PostgreSQL
+
+Pasos para ejecutar localmente
+1. Clonar el repositorio e instalar dependencias:
 ```bash
-# development
-$ npm run start
+# 1. Clonar repositorio
+git clone [https://github.com/nicolassanchez1/product-service.git](https://github.com/nicolassanchez1/product-service.git)
 
-# watch mode
-$ npm run start:dev
+# 2. Instalar dependencias
+npm install
 
-# production mode
-$ npm run start:prod
+# 3. Levantar el servicio en modo desarrollo
+npm run start:dev
 ```
 
-## Run tests
+2. Explorar la Documentación de la API (Swagger):
+- Una vez en ejecución, puedes explorar e interactuar con los endpoints usando la integración nativa de Swagger en la siguiente ruta:
+* Products API Swagger: http://localhost:3003/api
+
+Opción B: Usando Docker (Producción)
 
 ```bash
-# unit tests
-$ npm run test
+# 1. Construir la imagen
+docker build -t products-service .
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+# 2. Correr el contenedor
+docker run -p 3003:3003 --env-file .env products-service
 ```
 
-## 2. Cloud Design (Deployment on Render)
+## 🛣️ Enrutamiento y Endpoints
+A continuación, se detallan las rutas expuestas por el controlador interno. (Nota: Si consultas a través del API Gateway, la ruta base es `http://localhost:8080/products).`
 
-For the cloud deployment strategy, I chose **Render** as the Cloud PaaS provider. This allows for a real, live cloud environment instead of a local simulation, demonstrating a production-ready approach.
-
-The microservices architecture is mapped to Render's infrastructure as follows:
-
-- **Database:** A Managed PostgreSQL instance on Render. This ensures ACID compliance and provides automated backups and secure internal networking.
-- **Products Microservice:** Deployed as a Node.js "Web Service". It connects securely to the PostgreSQL database using environment variables (`DB_HOST`, `DB_PASSWORD`, etc.).
-- **Orders Microservice:** (To be deployed) Will be set up as a separate "Web Service" to maintain the decoupling of domains.
-- **Inter-service Communication:** Services will communicate via REST over Render's internal private network, ensuring low latency and preventing external exposure of internal endpoints.
-
-This approach perfectly aligns with the required scalability, maintainability, and separation of concerns. If traffic spikes in the catalog domain, the Products Web Service can be scaled vertically or horizontally in Render without affecting the Orders Web Service.
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Métodos | Endpoint | Descripción | Seguridad |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/products` | ➔ **Obtiene el catálogo completo de productos.** | Pública |
+| `GET` | `/products/:id` | ➔ **Obtiene los detalles de un producto específico.**| Pública |
+| `POST` | `/products` | ➔ **Crea un nuevo producto en el catálogo.** | 🔒 Requiere JWT |
+| `PATCH` | `/products/:id` | ➔ **Actualiza los datos o el stock de un producto.** | 🔒 Requiere JWT |
