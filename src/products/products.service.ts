@@ -11,8 +11,8 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
-    const newProduct = this.productRepository.create(createProductDto);
+  async create(createProductDto: CreateProductDto, userId: string): Promise<Product> {
+    const newProduct = this.productRepository.create({ ...createProductDto, userId });
     return await this.productRepository.save(newProduct);
   }
 
@@ -20,7 +20,7 @@ export class ProductsService {
     return await this.productRepository.find();
   }
 
-  async findOne(id: number): Promise<Product> {
+  async findOne(id: string): Promise<Product> {
     const product = await this.productRepository.findOne({ where: { id } });
 
     if (!product) {
@@ -28,5 +28,11 @@ export class ProductsService {
     }
 
     return product;
+  }
+
+  async update(id: string, updateProductDto: any): Promise<Product> {
+    const product = await this.findOne(id);
+    Object.assign(product, updateProductDto);
+    return await this.productRepository.save(product);
   }
 }
